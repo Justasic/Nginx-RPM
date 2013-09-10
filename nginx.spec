@@ -16,7 +16,7 @@
 
 Name:              nginx
 Epoch:             1
-Version:           1.4.2
+Version:           1.5.4
 Release:           3%{?dist}
 
 Summary:           A high performance web server and reverse proxy server
@@ -28,13 +28,26 @@ URL:               http://nginx.org/
 
 Source0:           http://nginx.org/download/nginx-%{version}.tar.gz
 Source1:           http://nginx.org/download/nginx-%{version}.tar.gz.asc
-Source10:          nginx.service
-Source11:          nginx.logrotate
-Source12:          nginx.conf
-Source13:          nginx-upgrade
-Source14:          nginx-upgrade.8
-Source15:          nginx.init
-Source16:          nginx.sysconfig
+##                 Mod_Pagespeed. page speed release and psol (needed by pagespeed module)
+#Source2:           https://codeload.github.com/pagespeed/ngx_pagespeed/zip/master
+Source2:           https://github.com/pagespeed/ngx_pagespeed/archive/release-1.6.29.5-beta.tar.gz
+Source3:           https://dl.google.com/dl/page-speed/psol/1.6.29.5.tar.gz
+Source4:           https://github.com/gnosek/nginx-upstream-fair/archive/master.tar.gz
+Source5:           https://github.com/masterzen/nginx-upload-progress-module/archive/v0.9.0.tar.gz
+Source6:           https://github.com/vkholodkov/nginx-upload-module/archive/2.2.0.tar.gz
+Source7:           https://github.com/arut/nginx-rtmp-module/archive/v1.0.3.tar.gz
+Source8:           https://github.com/evanmiller/mod_zip/archive/master.tar.gz
+# Because github does not make it easy to name/download files from them (thanks for that btw) we must make separate source files
+# for this. This requires manual download and rename of the file mod_zip to mod_zip-master.zip
+Source9:           mod_zip-master.tar.gz
+Source10:          http://web.iti.upv.es/~sto/nginx/ngx_http_auth_pam_module-1.2.tar.gz
+Source20:          nginx.service
+Source21:          nginx.logrotate
+Source22:          nginx.conf
+Source23:          nginx-upgrade
+Source24:          nginx-upgrade.8
+Source25:          nginx.init
+Source26:          nginx.sysconfig
 Source100:         index.html
 Source101:         poweredby.png
 Source102:         nginx-logo.png
@@ -44,6 +57,7 @@ Source104:         50x.html
 # removes -Werror in upstream build scripts.  -Werror conflicts with
 # -D_FORTIFY_SOURCE=2 causing warnings to turn into errors.
 Patch0:            nginx-auto-cc-gcc.patch
+Patch1:            nginx-1.3.9-upload.patch
 
 BuildRequires:     GeoIP-devel
 BuildRequires:     gd-devel
@@ -56,6 +70,7 @@ BuildRequires:     pcre-devel
 BuildRequires:     perl-devel
 BuildRequires:     perl(ExtUtils::Embed)
 BuildRequires:     zlib-devel
+BuildRequires:     pam-devel
 Requires:          GeoIP
 Requires:          gd
 Requires:          openssl
@@ -82,8 +97,21 @@ memory usage.
 
 
 %prep
-%setup -q
+# We're in the BUILD directory and this file was not copied
+cp ../nginx-auto-cc-gcc.patch ../SOURCES/nginx-auto-cc-gcc.patch
+%setup -q -n %{name}-%{version}
+%{__tar} zxvf %{SOURCE5}
+%setup -T -D -a 2
+%setup -T -D -a 3
+%setup -T -D -a 4
+%setup -T -D -a 5
+%setup -T -D -a 6
+%setup -T -D -a 7
+%setup -T -D -a 9
+%setup -T -D -a 10
 %patch0 -p0
+#%patch1 -p0
+mv psol/ ngx_pagespeed-release-1.6.29.5-beta/
 
 
 %build
@@ -140,7 +168,15 @@ export DESTDIR=%{buildroot}
 %endif
     --with-debug \
     --with-cc-opt="%{optflags} $(pcre-config --cflags)" \
-    --with-ld-opt="$RPM_LD_FLAGS -Wl,-E" # so the perl module finds its symbols
+    --with-ld-opt="$RPM_LD_FLAGS -Wl,-E" \
+    --add-module=%{_builddir}/nginx-%{version}/nginx-upstream-fair-master \
+    --add-module=%{_builddir}/nginx-%{version}/nginx-upload-progress-module-0.9.0 \
+    --add-module=%{_builddir}/nginx-%{version}/mod_zip-master \
+    --add-module=%{_builddir}/nginx-%{version}/ngx_http_auth_pam_module-1.2 \
+    --add-module=%{_builddir}/nginx-%{version}/nginx-rtmp-module-1.0.3 \
+    --add-module=%{_builddir}/nginx-%{version}/ngx_pagespeed-release-1.6.29.5-beta
+#--add-module=%{_builddir}/nginx-%{version}/nginx-upload-module-2.2.0 \
+
 
 make %{?_smp_mflags}
 
@@ -153,16 +189,16 @@ find %{buildroot} -type f -name perllocal.pod -exec rm -f '{}' \;
 find %{buildroot} -type f -empty -exec rm -f '{}' \;
 find %{buildroot} -type f -iname '*.so' -exec chmod 0755 '{}' \;
 %if 0%{?fedora} >= 16
-install -p -D -m 0644 %{SOURCE10} \
+install -p -D -m 0644 %{SOURCE20} \
     %{buildroot}%{_unitdir}/nginx.service
 %else
-install -p -D -m 0755 %{SOURCE15} \
+install -p -D -m 0755 %{SOURCE25} \
     %{buildroot}%{_initrddir}/nginx
-install -p -D -m 0644 %{SOURCE16} \
+install -p -D -m 0644 %{SOURCE26} \
     %{buildroot}%{_sysconfdir}/sysconfig/nginx
 %endif
 
-install -p -D -m 0644 %{SOURCE11} \
+install -p -D -m 0644 %{SOURCE21} \
     %{buildroot}%{_sysconfdir}/logrotate.d/nginx
 
 install -p -d -m 0755 %{buildroot}%{nginx_confdir}/conf.d
@@ -171,7 +207,7 @@ install -p -d -m 0700 %{buildroot}%{nginx_home_tmp}
 install -p -d -m 0700 %{buildroot}%{nginx_logdir}
 install -p -d -m 0755 %{buildroot}%{nginx_webroot}
 
-install -p -m 0644 %{SOURCE12} \
+install -p -m 0644 %{SOURCE22} \
     %{buildroot}%{nginx_confdir}
 install -p -m 0644 %{SOURCE100} \
     %{buildroot}%{nginx_webroot}
@@ -183,8 +219,8 @@ install -p -m 0644 %{SOURCE103} %{SOURCE104} \
 install -p -D -m 0644 %{_builddir}/nginx-%{version}/man/nginx.8 \
     %{buildroot}%{_mandir}/man8/nginx.8
 
-install -p -D -m 0755 %{SOURCE13} %{buildroot}%{_bindir}/nginx-upgrade
-install -p -D -m 0644 %{SOURCE14} %{buildroot}%{_mandir}/man8/nginx-upgrade.8
+install -p -D -m 0755 %{SOURCE23} %{buildroot}%{_bindir}/nginx-upgrade
+install -p -D -m 0644 %{SOURCE24} %{buildroot}%{_mandir}/man8/nginx-upgrade.8
 
 
 %pre
@@ -269,6 +305,17 @@ fi
 
 
 %changelog
+* Tue Sep 10 2013 Justin Crawford <justinc@pci-online.net> - 1:1.5.4-3
+- Add mod_pagespeed
+- Adjust naming convention used in specfile
+- Added nginx-upstream-fair module from centos
+- Added nginx-upload-progress-module from centos
+- Added mod_zip from centos
+- Added http_auth_pam_module from centos
+- Added nginx-upload-module from centos
+- Added nginx-rtmp-module from centos
+- Version jump to 1.5.4
+
 * Fri Aug 09 2013 Jonathan Steffan <jsteffan@fedoraproject.org> - 1:1.4.2-3
 - Add in conditionals to build for non-systemd targets
 
