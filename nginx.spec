@@ -16,7 +16,7 @@
 
 Name:              nginx
 Epoch:             1
-Version:           1.5.4
+Version:           1.5.6
 Release:           3%{?dist}
 
 Summary:           A high performance web server and reverse proxy server
@@ -30,8 +30,8 @@ Source0:           http://nginx.org/download/nginx-%{version}.tar.gz
 Source1:           http://nginx.org/download/nginx-%{version}.tar.gz.asc
 ##                 Mod_Pagespeed. page speed release and psol (needed by pagespeed module)
 #Source2:           https://codeload.github.com/pagespeed/ngx_pagespeed/zip/master
-Source2:           https://github.com/pagespeed/ngx_pagespeed/archive/release-1.6.29.5-beta.tar.gz
-Source3:           https://dl.google.com/dl/page-speed/psol/1.6.29.5.tar.gz
+Source2:           https://github.com/pagespeed/ngx_pagespeed/archive/v1.7.30.1-beta.tar.gz
+Source3:           https://dl.google.com/dl/page-speed/psol/1.7.30.1.tar.gz
 Source4:           https://github.com/gnosek/nginx-upstream-fair/archive/master.tar.gz
 Source5:           https://github.com/masterzen/nginx-upload-progress-module/archive/v0.9.0.tar.gz
 Source6:           https://github.com/vkholodkov/nginx-upload-module/archive/2.2.0.tar.gz
@@ -98,7 +98,7 @@ memory usage.
 
 %prep
 # We're in the BUILD directory and this file was not copied
-cp ../nginx-auto-cc-gcc.patch ../SOURCES/nginx-auto-cc-gcc.patch
+#cp ../nginx-auto-cc-gcc.patch ../SOURCES/nginx-auto-cc-gcc.patch
 %setup -q -n %{name}-%{version}
 %{__tar} zxvf %{SOURCE5}
 %setup -T -D -a 2
@@ -111,7 +111,7 @@ cp ../nginx-auto-cc-gcc.patch ../SOURCES/nginx-auto-cc-gcc.patch
 %setup -T -D -a 10
 %patch0 -p0
 #%patch1 -p0
-mv psol/ ngx_pagespeed-release-1.6.29.5-beta/
+mv psol/ ngx_pagespeed-1.7.30.1-beta/
 
 
 %build
@@ -174,7 +174,7 @@ export DESTDIR=%{buildroot}
     --add-module=%{_builddir}/nginx-%{version}/mod_zip-master \
     --add-module=%{_builddir}/nginx-%{version}/ngx_http_auth_pam_module-1.2 \
     --add-module=%{_builddir}/nginx-%{version}/nginx-rtmp-module-1.0.3 \
-    --add-module=%{_builddir}/nginx-%{version}/ngx_pagespeed-release-1.6.29.5-beta
+    --add-module=%{_builddir}/nginx-%{version}/ngx_pagespeed-1.7.30.1-beta
 #--add-module=%{_builddir}/nginx-%{version}/nginx-upload-module-2.2.0 \
 
 
