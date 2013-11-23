@@ -16,7 +16,7 @@
 
 Name:              nginx
 Epoch:             1
-Version:           1.5.6
+Version:           1.5.7
 Release:           3%{?dist}
 
 Summary:           A high performance web server and reverse proxy server
@@ -77,6 +77,7 @@ Requires:          openssl
 Requires:          pcre
 Requires:          perl(:MODULE_COMPAT_%(eval "`%{__perl} -V:version`"; echo $version))
 Requires(pre):     shadow-utils
+Requires(pre):     gcc-c++
 Provides:          webserver
 
 %if 0%{?fedora} >= 16
