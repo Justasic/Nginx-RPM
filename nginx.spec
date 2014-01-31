@@ -16,7 +16,7 @@
 
 Name:              nginx
 Epoch:             1
-Version:           1.5.7
+Version:           1.5.8
 Release:           3%{?dist}
 
 Summary:           A high performance web server and reverse proxy server
@@ -26,21 +26,16 @@ Group:             System Environment/Daemons
 License:           BSD
 URL:               http://nginx.org/
 
-Source0:           http://nginx.org/download/nginx-%{version}.tar.gz
-Source1:           http://nginx.org/download/nginx-%{version}.tar.gz.asc
-##                 Mod_Pagespeed. page speed release and psol (needed by pagespeed module)
-#Source2:           https://codeload.github.com/pagespeed/ngx_pagespeed/zip/master
-Source2:           https://github.com/pagespeed/ngx_pagespeed/archive/v1.7.30.1-beta.tar.gz
-Source3:           https://dl.google.com/dl/page-speed/psol/1.7.30.1.tar.gz
-Source4:           https://github.com/gnosek/nginx-upstream-fair/archive/master.tar.gz
-Source5:           https://github.com/masterzen/nginx-upload-progress-module/archive/v0.9.0.tar.gz
-Source6:           https://github.com/vkholodkov/nginx-upload-module/archive/2.2.0.tar.gz
-Source7:           https://github.com/arut/nginx-rtmp-module/archive/v1.0.3.tar.gz
-Source8:           https://github.com/evanmiller/mod_zip/archive/master.tar.gz
-# Because github does not make it easy to name/download files from them (thanks for that btw) we must make separate source files
-# for this. This requires manual download and rename of the file mod_zip to mod_zip-master.zip
-Source9:           mod_zip-master.tar.gz
-Source10:          http://web.iti.upv.es/~sto/nginx/ngx_http_auth_pam_module-1.2.tar.gz
+Source0:           nginx-%{version}.tar.gz
+Source1:           nginx-%{version}.tar.gz.asc
+Source2:           ngx_pagespeed-1.7.30.3-beta.tar.gz
+Source3:           1.7.30.3.tar.gz
+Source4:           nginx-upstream-fair-master.tar.gz
+Source5:           nginx-upload-progress-module-0.9.0.tar.gz
+Source6:           nginx-upload-module-2.2.0.tar.gz
+Source7:           nginx-rtmp-module-1.0.3.tar.gz
+Source8:           mod_zip-master.tar.gz
+Source9:           ngx_http_auth_pam_module-1.2.tar.gz
 Source20:          nginx.service
 Source21:          nginx.logrotate
 Source22:          nginx.conf
@@ -108,11 +103,11 @@ memory usage.
 %setup -T -D -a 5
 %setup -T -D -a 6
 %setup -T -D -a 7
+%setup -T -D -a 8
 %setup -T -D -a 9
-%setup -T -D -a 10
 %patch0 -p0
 #%patch1 -p0
-mv psol/ ngx_pagespeed-1.7.30.1-beta/
+mv psol/ ngx_pagespeed-1.7.30.3-beta/
 
 
 %build
@@ -175,7 +170,7 @@ export DESTDIR=%{buildroot}
     --add-module=%{_builddir}/nginx-%{version}/mod_zip-master \
     --add-module=%{_builddir}/nginx-%{version}/ngx_http_auth_pam_module-1.2 \
     --add-module=%{_builddir}/nginx-%{version}/nginx-rtmp-module-1.0.3 \
-    --add-module=%{_builddir}/nginx-%{version}/ngx_pagespeed-1.7.30.1-beta
+    --add-module=%{_builddir}/nginx-%{version}/ngx_pagespeed-1.7.30.3-beta
 #--add-module=%{_builddir}/nginx-%{version}/nginx-upload-module-2.2.0 \
 
 

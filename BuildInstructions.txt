@@ -1,9 +1,8 @@
 The configuration can be built with the following commands:
 
-$ git clone git://gorilla.parentchildinteractive.com/nginx ~/rpmbuild/
-$ spectool -g -R ~/rpmbuild/
-Note: until github changes how their file downloads work, there will be one url at the end of the output from spectool which will say "master.tar.gz already exists, skipping..", you must download the last url (which should be something about mod_zip or NgxZip) and save it in ~/rpmbuild/SOURCES/mod_zip-master.tar.gz
-$ rpmbuild -ba ~/rpmbuild/nginx.spec
+$ git clone git://github.com/Justasic/Nginx-RPM.git ~/rpmbuild/
+$ cd ~/rpmbuild/
+$ python build.py
 
 Once all is built with no errors, there will be a *.src.rpm which contains all these sources in ~/rpmbuild/SRPMS/ and the actual binary RPMs in ~/rpmbuild/RPMS/$arch/
 
