@@ -27,8 +27,8 @@ except:
 	print "[WARNING] cannot import python-platform, gperftools-devel may be a required package!"
 	hasplatform = False
 
-NGINXVER = "1.5.10"
-PAGESPEEDVER = "1.7.30.3"
+NGINXVER = "1.5.11"
+PAGESPEEDVER = "1.7.30.4"
 
 # List of all the packages we need.
 PACKAGES = [

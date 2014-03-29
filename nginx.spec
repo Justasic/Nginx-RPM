@@ -16,7 +16,7 @@
 
 Name:              nginx
 Epoch:             1
-Version:           1.5.10
+Version:           1.5.11
 Release:           3%{?dist}
 
 Summary:           A high performance web server and reverse proxy server
@@ -28,8 +28,8 @@ URL:               http://nginx.org/
 
 Source0:           nginx-%{version}.tar.gz
 Source1:           nginx-%{version}.tar.gz.asc
-Source2:           ngx_pagespeed-1.7.30.3-beta.tar.gz
-Source3:           1.7.30.3.tar.gz
+Source2:           ngx_pagespeed-1.7.30.4-beta.tar.gz
+Source3:           1.7.30.4.tar.gz
 Source4:           nginx-upstream-fair-master.tar.gz
 Source5:           nginx-upload-progress-module-0.9.0.tar.gz
 Source6:           nginx-upload-module-2.2.0.tar.gz
@@ -107,7 +107,7 @@ memory usage.
 %setup -T -D -a 9
 %patch0 -p0
 #%patch1 -p0
-mv psol/ ngx_pagespeed-1.7.30.3-beta/
+mv psol/ ngx_pagespeed-1.7.30.4-beta/
 
 
 %build
@@ -170,7 +170,7 @@ export DESTDIR=%{buildroot}
     --add-module=%{_builddir}/nginx-%{version}/mod_zip-master \
     --add-module=%{_builddir}/nginx-%{version}/ngx_http_auth_pam_module-1.2 \
     --add-module=%{_builddir}/nginx-%{version}/nginx-rtmp-module-1.0.3 \
-    --add-module=%{_builddir}/nginx-%{version}/ngx_pagespeed-1.7.30.3-beta
+    --add-module=%{_builddir}/nginx-%{version}/ngx_pagespeed-1.7.30.4-beta
 #--add-module=%{_builddir}/nginx-%{version}/nginx-upload-module-2.2.0 \
 
 
